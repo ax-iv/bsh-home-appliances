@@ -85,8 +85,10 @@ void BSHDBus::loop() {
     lastvalid = p;
     const uint8_t dest = framedata[1];
     const uint16_t command = (framedata[2] << 8) + framedata[3];
-    std::vector<uint8_t> message(framedata + 4, framedata + framelen - 2);
-    this->bufferLast = this->bufferNow;
+    std::vector<uint8_t> message(framedata + 4, framedata + framelen - 2);    
+    this->bufferLast.clear();
+    if(this->bufferNow.size()>0)
+       this->bufferLast.insert(bufferLast.begin(), this->bufferNow.begin(), this->bufferNow.end())
     this->bufferNow.clear();
     this->bufferNow.push_back(framedata[1]);
     this->bufferNow.push_back(framedata[2]);
