@@ -94,7 +94,7 @@ void BSHDBus::loop() {
     this->bufferNow.push_back(framedata[2]);
     this->bufferNow.push_back(framedata[3]);
     this->bufferNow.insert(bufferNow.begin()+3, message.begin(), message.end()); 
-    if(this->bufferLast != this->bufferLast){     
+    if(this->bufferLast != this->bufferNow){     
        ESP_LOGD(TAG, "Valid frame dest 0x%02X cmd 0x%04X: 0x%s", dest, command,
                format_hex(message).c_str());
        for (auto &listener : this->listeners_)
