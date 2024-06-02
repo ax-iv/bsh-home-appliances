@@ -86,7 +86,7 @@ void BSHDBus::loop() {
     const uint8_t dest = framedata[1];
     const uint16_t command = (framedata[2] << 8) + framedata[3];
     std::vector<uint8_t> message(framedata + 4, framedata + framelen - 2);    
-    this->bufferLast.clear();
+    /*this->bufferLast.clear();
     if(this->bufferNow.size()>0)
        this->bufferLast.insert(bufferLast.begin(), this->bufferNow.begin(), this->bufferNow.end())
     this->bufferNow.clear();
@@ -94,12 +94,12 @@ void BSHDBus::loop() {
     this->bufferNow.push_back(framedata[2]);
     this->bufferNow.push_back(framedata[3]);
     this->bufferNow.insert(bufferNow.begin()+3, message.begin(), message.end()); 
-    if(this->bufferLast != this->bufferNow){     
+    if(this->bufferLast != this->bufferNow){  */   
        ESP_LOGD(TAG, "Valid frame dest 0x%02X cmd 0x%04X: 0x%s", dest, command,
                format_hex(message).c_str());
        for (auto &listener : this->listeners_)
          listener->on_message(dest, command, message);
-    }
+    //}
   }
 
   if (lastvalid) {
