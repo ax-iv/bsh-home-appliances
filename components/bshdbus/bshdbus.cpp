@@ -135,8 +135,27 @@ void BSHDBus::loop() {
          TxMes.push_back(message[6] & 0x0F);
          for (auto &listener : this->listeners_)
            listener->on_message(0x14, 0x1007, TxMes);
-        
+
      
+         TxMes.clear();   
+         if(message[0] & 0x40) TxMes.push_back(0);
+         if(message[0] & 0x20) TxMes.push_back(1);
+         if(message[0] & 0x10) TxMes.push_back(2);
+         if(message[0] & 0x08) TxMes.push_back(3);
+         if(message[0] & 0x04) TxMes.push_back(5);
+         if(message[0] & 0x02) TxMes.push_back(7);
+         for (auto &listener : this->listeners_)
+           listener->on_message(0x14, 0x1004, TxMes);
+     
+         TxMes.clear();   
+         if(message[1] & 0x01) TxMes.push_back(100);
+         if(message[1] & 0x06) TxMes.push_back(90);
+         if(message[1] & 0x08) TxMes.push_back(80);
+         if(message[1] & 0x10) TxMes.push_back(60);
+         if(message[1] & 0x20) TxMes.push_back(40);
+         if(message[1] & 0x40) TxMes.push_back(0);
+         for (auto &listener : this->listeners_)
+           listener->on_message(0x14, 0x1006, TxMes);
        //for (auto &listener : this->listeners_)
        //  listener->on_message(dest, command, message);
     
