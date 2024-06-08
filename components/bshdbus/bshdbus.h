@@ -41,6 +41,8 @@ class BSHDBus : public uart::UARTDevice, public Component {
   uint8_t powerLedStateLast=0;
   uint32_t lastread_{0};
   std::vector<BSHDBusListener *> listeners_{};
+private:
+  uint8_t digitToNumber(uint8_t value);
 };
 
 }  // namespace bshdbus
