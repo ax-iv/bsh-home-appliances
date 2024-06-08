@@ -100,8 +100,8 @@ void BSHDBus::loop() {
     }
 
     lastvalid = p;
-    uint8_t dest = framedata[1];
-    uint16_t command = (framedata[2] << 8) + framedata[3];
+    const uint8_t dest = framedata[1];
+    const uint16_t command = (framedata[2] << 8) + framedata[3];
     std::vector<uint8_t> message(framedata + 4, framedata + framelen - 2);    
      std::vector<uint8_t> TxMes;
      
@@ -110,8 +110,6 @@ void BSHDBus::loop() {
      /* POWER LED STATE */
         powerLedStateLast = powerLedStateNow;
         powerLedStateNow = message[6];
-        dest = 0x15;
-        command = 0x1100;
         TxMes.clear();   
         if((powerLedStateNow & powerLedStateLast) == 0x00 )
            TxMes.push_back(0x0);
@@ -120,11 +118,9 @@ void BSHDBus::loop() {
         if((powerLedStateNow & powerLedStateLast) == 0x20 )
            TxMes.push_back(0x2);
         for (auto &listener : this->listeners_)
-          listener->on_message(dest, command, TxMes);
+          listener->on_message(0x15, 0x1100, TxMes);
      /* END POWER LED STATE */
      /* remaining time */
-        dest = 0x2a;
-        command = 0x1600;
         TxMes.clear();   
         uint16_t time = digitToNumber(message[5]);
         time += digitToNumber(message[4])*10;
@@ -132,7 +128,7 @@ void BSHDBus::loop() {
         TxMes.push_back(time&0xFF);
         TxMes.push_back(time&0xFF00>>8);
         for (auto &listener : this->listeners_)
-          listener->on_message(dest, command, TxMes);
+          listener->on_message(0x2a, 0x1600, TxMes);
      /* end remaining time */
         
      
