@@ -35,8 +35,10 @@ class BSHDBus : public uart::UARTDevice, public Component {
 
  protected:
   std::vector<uint8_t> buffer_;
- /*std::vector<uint8_t> bufferNow;  
- std::vector<uint8_t> bufferLast;*/
+  std::vector<uint8_t> bufferNow;  
+  std::vector<uint8_t> bufferLast;
+  uint8_t powerLedStateNow=0;
+  uint8_t powerLedStateLast=0;
   uint32_t lastread_{0};
   std::vector<BSHDBusListener *> listeners_{};
 };
