@@ -40,6 +40,23 @@ void BSHDBus::dump_config() {
   ESP_LOGCONFIG(TAG, "BSHDBus:");
   check_uart_settings(9600);
 }
+uint8_t BSHDBus::digitToNumber(uint8_t value){
+   /* #77	0   #60	1   #1e	2   #7c	3   #69	4   
+      #5d	5   #5f	6   #64	7   #7f	8   #7d	9*/
+   switch(value){
+      case 0x77: return 0;
+      case 0x60: return 1;
+      case 0x1e: return 2;
+      case 0x7c: return 3;
+      case 0x69: return 4;
+      case 0x5d: return 5;
+      case 0x5f: return 6;
+      case 0x64: return 7;
+      case 0x7f: return 8;
+      case 0x7d: return 9;
+      default: return 0;
+   }
+}
 
 void BSHDBus::loop() {
   if (!available())
@@ -86,33 +103,44 @@ void BSHDBus::loop() {
     const uint8_t dest = framedata[1];
     const uint16_t command = (framedata[2] << 8) + framedata[3];
     std::vector<uint8_t> message(framedata + 4, framedata + framelen - 2);    
-     powerLedStateLast = powerLedStateNow;
-     powerLedStateNow = message[12];
-     if(powerLedStateNow == powerLedStateLast && powerLedStateNow ==1 )
-     {
-        dest = 0x15
-        command = 0x1100
-        message.clear();
-        message.push_back(0x1);
-        for (auto &listener : this->listeners_)
-         listener->on_message(dest, command, message);
-     }
+     std::vector<uint8_t> TxMes;
+     
      ESP_LOGD(TAG, "Valid frame dest 0x%02X cmd 0x%04X: 0x%s", dest, command,
                format_hex(message).c_str());
-       for (auto &listener : this->listeners_)
-         listener->on_message(dest, command, message);
+     /* POWER LED STATE */
+        powerLedStateLast = powerLedStateNow;
+        powerLedStateNow = message[6];
+        dest = 0x15;
+        command = 0x1100;
+        TxMes.clear();   
+        if((powerLedStateNow & powerLedStateLast) == 0x00 )
+           TxMes.push_back(0x0);
+        if((powerLedStateNow & powerLedStateLast) == 0x10 )
+           TxMes.push_back(0x1);
+        if((powerLedStateNow & powerLedStateLast) == 0x20 )
+           TxMes.push_back(0x2);
+        for (auto &listener : this->listeners_)
+          listener->on_message(dest, command, TxMes);
+     /* END POWER LED STATE */
+     /* remaining time */
+        dest = 0x2a;
+        command = 0x1600;
+        TxMes.clear();   
+        uint16_t time = digitToNumber(message[5]);
+        time += digitToNumber(message[4])*10;
+        time += digitToNumber(message[3])*60;
+        TxMes.push_back(time&0xFF);
+        TxMes.push_back(time&0xFF00>>8);
+        for (auto &listener : this->listeners_)
+          listener->on_message(dest, command, TxMes);
+     /* end remaining time */
+        
+     
+       //for (auto &listener : this->listeners_)
+       //  listener->on_message(dest, command, message);
     
   }
-/* #77	0
-#60	1
-#1e	2
-#7c	3
-#69	4
-#5d	5
-#5f	6
-#64	7
-#7f	8
-#7d	9*/
+
   if (lastvalid) {
     /* Remove all valid frames and (possibly) preceeding trash from buffer */
     this->buffer_.erase(this->buffer_.begin(), this->buffer_.begin() + lastvalid);
