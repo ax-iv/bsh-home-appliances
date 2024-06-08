@@ -86,22 +86,33 @@ void BSHDBus::loop() {
     const uint8_t dest = framedata[1];
     const uint16_t command = (framedata[2] << 8) + framedata[3];
     std::vector<uint8_t> message(framedata + 4, framedata + framelen - 2);    
-    /*this->bufferLast.clear();
-    if(this->bufferNow.size()>0)
-       this->bufferLast.insert(bufferLast.begin(), this->bufferNow.begin(), this->bufferNow.end())
-    this->bufferNow.clear();
-    this->bufferNow.push_back(framedata[1]);
-    this->bufferNow.push_back(framedata[2]);
-    this->bufferNow.push_back(framedata[3]);
-    this->bufferNow.insert(bufferNow.begin()+3, message.begin(), message.end()); 
-    if(this->bufferLast != this->bufferNow){  */   
-       ESP_LOGD(TAG, "Valid frame dest 0x%02X cmd 0x%04X: 0x%s", dest, command,
+     powerLedStateLast = powerLedStateNow;
+     powerLedStateNow = message[12];
+     if(powerLedStateNow == powerLedStateLast && powerLedStateNow ==1 )
+     {
+        dest = 0x15
+        command = 0x1100
+        message.clear();
+        message.push_back(0x1);
+        for (auto &listener : this->listeners_)
+         listener->on_message(dest, command, message);
+     }
+     ESP_LOGD(TAG, "Valid frame dest 0x%02X cmd 0x%04X: 0x%s", dest, command,
                format_hex(message).c_str());
        for (auto &listener : this->listeners_)
          listener->on_message(dest, command, message);
-    //}
+    
   }
-
+/* #77	0
+#60	1
+#1e	2
+#7c	3
+#69	4
+#5d	5
+#5f	6
+#64	7
+#7f	8
+#7d	9*/
   if (lastvalid) {
     /* Remove all valid frames and (possibly) preceeding trash from buffer */
     this->buffer_.erase(this->buffer_.begin(), this->buffer_.begin() + lastvalid);
