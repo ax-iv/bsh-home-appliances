@@ -100,8 +100,8 @@ void BSHDBus::loop() {
     }
 
     lastvalid = p;
-    const uint8_t dest = framedata[1];
-    const uint16_t command = (framedata[2] << 8) + framedata[3];
+    uint8_t dest = framedata[1];
+    uint16_t command = (framedata[2] << 8) + framedata[3];
     std::vector<uint8_t> message(framedata + 4, framedata + framelen - 2);    
      std::vector<uint8_t> TxMes;
      
