@@ -46,7 +46,7 @@ uint8_t BSHDBus::digitToNumber(uint8_t value){
    switch(value){
       case 0x77: return 0;
       case 0x60: return 1;
-      case 0x1e: return 2;
+      case 0x3e: return 2;
       case 0x7c: return 3;
       case 0x69: return 4;
       case 0x5d: return 5;
@@ -109,7 +109,7 @@ void BSHDBus::loop() {
                format_hex(message).c_str());
      /* POWER LED STATE */
         powerLedStateLast = powerLedStateNow;
-        powerLedStateNow = message[6];
+        powerLedStateNow = message[6] & 0xF0;
         TxMes.clear();   
         if((powerLedStateNow & powerLedStateLast) == 0x00 )
            TxMes.push_back(0x0);
@@ -130,6 +130,11 @@ void BSHDBus::loop() {
         for (auto &listener : this->listeners_)
           listener->on_message(0x2a, 0x1600, TxMes);
      /* end remaining time */
+        
+         TxMes.clear();   
+         TxMes.push_back(message[6] & 0x0F);
+         for (auto &listener : this->listeners_)
+           listener->on_message(0x14, 0x1007, TxMes);
         
      
        //for (auto &listener : this->listeners_)
