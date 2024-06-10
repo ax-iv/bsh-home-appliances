@@ -117,37 +117,43 @@ void BSHDBus::loop() {
            TxMes.push_back(0x1);
         if((powerLedStateNow & powerLedStateLast) == 0x20 )
            TxMes.push_back(0x2);
-        for (auto &listener : this->listeners_)
-          listener->on_message(0x15, 0x1100, TxMes);
+        /*for (auto &listener : this->listeners_)
+          listener->on_message(0x15, 0x1100, TxMes);*/
+        
      /* END POWER LED STATE */
      /* remaining time */
-        TxMes.clear();   
+        //TxMes.clear();   
         uint16_t time = digitToNumber(message[5]);
         time += digitToNumber(message[4])*10;
         time += digitToNumber(message[3])*60;
         TxMes.push_back(time&0xFF);
         TxMes.push_back(time&0xFF00>>8);
-        for (auto &listener : this->listeners_)
-          listener->on_message(0x2a, 0x1600, TxMes);
+        //for (auto &listener : this->listeners_)
+        //  listener->on_message(0x2a, 0x1600, TxMes);
      /* end remaining time */
         
-         TxMes.clear();   
+         //TxMes.clear();   
          TxMes.push_back(message[6] & 0x0F);
-         for (auto &listener : this->listeners_)
-           listener->on_message(0x14, 0x1007, TxMes);
+         //for (auto &listener : this->listeners_)
+         //  listener->on_message(0x14, 0x1007, TxMes);
 
-     
-         TxMes.clear();   
+     /* 0 - run state
+        1,2 - remaining time
+        3 - options
+        4 - temerature
+        5 - speed
+     */ 
+         //TxMes.clear();   
          if(message[0] & 0x40) TxMes.push_back(0);
          if(message[0] & 0x20) TxMes.push_back(1);
          if(message[0] & 0x10) TxMes.push_back(2);
          if(message[0] & 0x08) TxMes.push_back(3);
          if(message[0] & 0x04) TxMes.push_back(5);
          if(message[0] & 0x02) TxMes.push_back(7);
-         for (auto &listener : this->listeners_)
-           listener->on_message(0x14, 0x1004, TxMes);
+         //for (auto &listener : this->listeners_)
+         //  listener->on_message(0x14, 0x1004, TxMes);
      
-         TxMes.clear();   
+         //TxMes.clear();   
          if(message[1] & 0x01) TxMes.push_back(100);
          if(message[1] & 0x06) TxMes.push_back(90);
          if(message[1] & 0x08) TxMes.push_back(80);
