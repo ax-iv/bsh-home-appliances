@@ -19,7 +19,7 @@ void BSHDBusCustomTSensor::dump_config() {
   } else {
     ESP_LOGCONFIG(TAG, "  Command: 0x%04x", this->command_);
   }
-  ESP_LOGCONFIG(TAG, "  Text Sensors:");
+  //ESP_LOGCONFIG(TAG, "  Text Sensors:");
   for (BSHDBusCustomSubTSensor *tsensor : this->tsensors_) {
     LOG_TEXT_SENSOR("  ", "-", tsensor);
   }
