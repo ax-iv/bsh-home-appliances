@@ -123,11 +123,12 @@ void BSHDBus::loop() {
      /* END POWER LED STATE */
      /* remaining time */
         //TxMes.clear();   
-        uint16_t time = digitToNumber(message[5]);
+        uint8_t time = digitToNumber(message[5]);
         time += digitToNumber(message[4])*10;
         time += digitToNumber(message[3])*60;
-        TxMes.push_back(time&0xFF);
-        TxMes.push_back(time&0xFF00>>8);
+        //TxMes.push_back(time&0xFF);
+        TxMes.push_back(time);
+        //TxMes.push_back(time&0xFF00>>8);
         //for (auto &listener : this->listeners_)
         //  listener->on_message(0x2a, 0x1600, TxMes);
      /* end remaining time */
@@ -138,10 +139,10 @@ void BSHDBus::loop() {
          //  listener->on_message(0x14, 0x1007, TxMes);
 
      /* 0 - run state
-        1,2 - remaining time
-        3 - options
-        4 - temerature
-        5 - speed
+        1 - remaining time
+        2 - options
+        3 - temerature
+        4 - speed
      */ 
          //TxMes.clear();   
          if(message[0] & 0x40) TxMes.push_back(0);
