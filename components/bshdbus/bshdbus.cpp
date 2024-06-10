@@ -107,6 +107,7 @@ void BSHDBus::loop() {
      
      ESP_LOGD(TAG, "Valid frame dest 0x%02X cmd 0x%04X: 0x%s", dest, command,
                format_hex(message).c_str());
+      if(dest == 0x22 && command == 0x1003){
      /* POWER LED STATE */
         powerLedStateLast = powerLedStateNow;
         powerLedStateNow = message[6] & 0xF0;
@@ -133,28 +134,21 @@ void BSHDBus::loop() {
         //  listener->on_message(0x2a, 0x1600, TxMes);
      /* end remaining time */
         
-         //TxMes.clear();   
          TxMes.push_back(message[6] & 0x0F);
-         //for (auto &listener : this->listeners_)
-         //  listener->on_message(0x14, 0x1007, TxMes);
-
+        
      /* 0 - run state
         1 - remaining time
         2 - options
         3 - temerature
         4 - speed
      */ 
-         //TxMes.clear();   
          if(message[0] & 0x40) TxMes.push_back(0);
          if(message[0] & 0x20) TxMes.push_back(1);
          if(message[0] & 0x10) TxMes.push_back(2);
          if(message[0] & 0x08) TxMes.push_back(3);
          if(message[0] & 0x04) TxMes.push_back(5);
          if(message[0] & 0x02) TxMes.push_back(7);
-         //for (auto &listener : this->listeners_)
-         //  listener->on_message(0x14, 0x1004, TxMes);
      
-         //TxMes.clear();   
          if(message[1] & 0x01) TxMes.push_back(100);
          if(message[1] & 0x06) TxMes.push_back(90);
          if(message[1] & 0x08) TxMes.push_back(80);
@@ -163,9 +157,8 @@ void BSHDBus::loop() {
          if(message[1] & 0x40) TxMes.push_back(0);
          for (auto &listener : this->listeners_)
            listener->on_message(0x14, 0x1006, TxMes);
-       //for (auto &listener : this->listeners_)
-       //  listener->on_message(dest, command, message);
-    
+      }
+       
   }
 
   if (lastvalid) {
